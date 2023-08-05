@@ -5,7 +5,6 @@
  */
 package me.filoghost.chestcommands.hook;
 
-import me.confuser.barapi.BarAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -29,7 +28,7 @@ public enum BarAPIHook implements PluginHook {
     public static void setMessage(Player player, String message, int seconds) {
         INSTANCE.checkEnabledState();
 
-        BarAPI.setMessage(player, message, seconds);
+        //BarAPI.setMessage(player, message, seconds);
     }
 
 }

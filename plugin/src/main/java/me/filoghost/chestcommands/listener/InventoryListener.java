@@ -79,14 +79,21 @@ public class InventoryListener implements Listener {
         }
 
         // Only handle the click AFTER the event has finished
-        Bukkit.getScheduler().runTask(ChestCommands.getInstance(), () -> {
+        /*Bukkit.getServer().getGlobalRegionScheduler().run(ChestCommands.getInstance(), bukkitTask -> {
             try {
                 icon.onClick(menuView, clicker);
             } catch (Throwable t) {
                 handleIconClickException(clicker, menuView.getMenu(), t);
                 menuView.close();
             }
-        });
+        });*/
+
+        try {
+            icon.onClick(menuView, clicker);
+        } catch (Throwable t) {
+            handleIconClickException(clicker, menuView.getMenu(), t);
+            menuView.close();
+        }
     }
 
     private void handleIconClickException(Player clicker, Menu menu, Throwable throwable) {

@@ -5,7 +5,9 @@
  */
 package me.filoghost.chestcommands.action;
 
+import me.filoghost.chestcommands.ChestCommands;
 import me.filoghost.chestcommands.placeholder.PlaceholderString;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class OpCommandAction implements Action {
@@ -18,13 +20,8 @@ public class OpCommandAction implements Action {
 
     @Override
     public void execute(Player player) {
-        if (player.isOp()) {
-            player.chat("/" + command.getValue(player));
-        } else {
-            player.setOp(true);
-            player.chat("/" + command.getValue(player));
-            player.setOp(false);
-        }
+        Bukkit.getServer().getScheduler().runTask(ChestCommands.getInstance(),
+                task -> player.chat("/" + command.getValue(player)));
     }
 
 }

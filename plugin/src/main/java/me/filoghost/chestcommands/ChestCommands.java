@@ -9,7 +9,6 @@ import me.filoghost.chestcommands.api.internal.BackendAPI;
 import me.filoghost.chestcommands.command.CommandHandler;
 import me.filoghost.chestcommands.config.ConfigManager;
 import me.filoghost.chestcommands.config.CustomPlaceholders;
-import me.filoghost.chestcommands.config.Settings;
 import me.filoghost.chestcommands.hook.BarAPIHook;
 import me.filoghost.chestcommands.hook.BungeeCordHook;
 import me.filoghost.chestcommands.hook.PlaceholderAPIHook;
@@ -26,13 +25,9 @@ import me.filoghost.chestcommands.menu.MenuManager;
 import me.filoghost.chestcommands.parsing.menu.LoadedMenu;
 import me.filoghost.chestcommands.placeholder.PlaceholderManager;
 import me.filoghost.chestcommands.task.TickingTask;
-import me.filoghost.fcommons.FCommonsPlugin;
 import me.filoghost.fcommons.config.ConfigLoader;
 import me.filoghost.fcommons.logging.ErrorCollector;
 import me.filoghost.fcommons.logging.Log;
-import me.filoghost.fcommons.reflection.ReflectUtils;
-import me.filoghost.updatechecker.UpdateChecker;
-import org.bstats.bukkit.MetricsLite;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
@@ -42,7 +37,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-public class ChestCommands extends FCommonsPlugin {
+public class ChestCommands extends BasePlugin {
 
 
     public static final String CHAT_PREFIX = ChatColor.DARK_GREEN + "[" + ChatColor.GREEN + "ChestCommands" + ChatColor.DARK_GREEN + "] " + ChatColor.GREEN;
@@ -57,8 +52,8 @@ public class ChestCommands extends FCommonsPlugin {
     private static String newVersion;
 
     @Override
-    protected void onCheckedEnable() throws PluginEnableException {
-        if (!ReflectUtils.isClassLoaded("org.bukkit.inventory.ItemFlag")) { // ItemFlag was added in 1.8
+    protected void onCheckedEnable() {
+        /*if (!ReflectUtils.isClassLoaded("org.bukkit.inventory.ItemFlag")) { // ItemFlag was added in 1.8
             if (Bukkit.getVersion().contains("(MC: 1.8)")) {
                 throw new PluginEnableException("ChestCommands requires a more recent version of Bukkit 1.8 to run.");
             } else {
@@ -70,7 +65,7 @@ public class ChestCommands extends FCommonsPlugin {
             throw new PluginEnableException("External plugin reloading is not supported:"
                     + " avoid using /reload or plugin reloaders, and use the command \"/cc reload\" instead."
                     + " Fully restart the server to enable ChestCommands again.");
-        }
+        }*/
 
         System.setProperty("ChestCommandsLoaded", "true");
 
@@ -111,28 +106,13 @@ public class ChestCommands extends FCommonsPlugin {
 
         if (errorCollector.hasErrors()) {
             errorCollector.logToConsole();
-            Bukkit.getScheduler().runTaskLater(this, () -> {
-                Bukkit.getConsoleSender().sendMessage(
-                        ChestCommands.CHAT_PREFIX + ChatColor.RED + "Encountered " + errorCollector.getErrorsCount() + " error(s) on load. "
-                        + "Check previous console logs or run \"/chestcommands errors\" to see them again.");
-            }, 10L);
+            Bukkit.getServer().getGlobalRegionScheduler().runDelayed(this, scheduledTask -> Bukkit.getConsoleSender().sendMessage(
+                    ChestCommands.CHAT_PREFIX + ChatColor.RED + "Encountered " + errorCollector.getErrorsCount() + " error(s) on load. "
+                    + "Check previous console logs or run \"/chestcommands errors\" to see them again."), 10L);
         }
 
-        if (Settings.get().update_notifications) {
-            UpdateChecker.run(this, 56919, (String newVersion) -> {
-                ChestCommands.newVersion = newVersion;
-
-                Log.info("Found a new version: " + newVersion + " (yours: v" + getDescription().getVersion() + ")");
-                Log.info("Download the update on Bukkit Dev:");
-                Log.info("https://dev.bukkit.org/projects/chest-commands");
-            });
-        }
-
-        // Start bStats metrics
-        int pluginID = 3658;
-        new MetricsLite(this, pluginID);
-
-        Bukkit.getScheduler().runTaskTimer(this, new TickingTask(), 1L, 1L);
+        Bukkit.getServer().getGlobalRegionScheduler().runAtFixedRate(this,
+                scheduledTask -> new TickingTask(), 1L, 1L);
     }
 
     @Override
