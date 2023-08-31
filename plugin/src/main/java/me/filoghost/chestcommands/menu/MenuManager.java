@@ -5,6 +5,7 @@
  */
 package me.filoghost.chestcommands.menu;
 
+import me.filoghost.chestcommands.ChestCommands;
 import me.filoghost.chestcommands.inventory.DefaultMenuView;
 import me.filoghost.chestcommands.inventory.MenuInventoryHolder;
 import me.filoghost.chestcommands.logging.Errors;
@@ -90,12 +91,14 @@ public class MenuManager {
     }
 
     public static void closeAllOpenMenuViews() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            DefaultMenuView openMenuView = getOpenMenuView(player);
-            if (openMenuView != null) {
-                openMenuView.close();
+        Bukkit.getGlobalRegionScheduler().run(ChestCommands.getInstance(), task -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                DefaultMenuView openMenuView = getOpenMenuView(player);
+                if (openMenuView != null) {
+                    openMenuView.close();
+                }
             }
-        }
+        });
     }
 
     public static @Nullable DefaultMenuView getOpenMenuView(Player player) {
