@@ -91,14 +91,14 @@ public class MenuManager {
     }
 
     public static void closeAllOpenMenuViews() {
-        Bukkit.getGlobalRegionScheduler().run(ChestCommands.getInstance(), task -> {
+        /*Bukkit.getGlobalRegionScheduler().run(ChestCommands.getInstance(), task -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 DefaultMenuView openMenuView = getOpenMenuView(player);
                 if (openMenuView != null) {
                     openMenuView.close();
                 }
             }
-        });
+        });*/
     }
 
     public static @Nullable DefaultMenuView getOpenMenuView(Player player) {
